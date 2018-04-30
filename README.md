@@ -30,7 +30,7 @@ Network diagram between Docker Network and Physical Network.
 ![Docker Network 1](./Docker-Network.png)
 
 Network diagram between NGINX Reverse Proxy and Docker Ports.
-![Docker Network 2](./Docker-Network2.png)
+![Docker Network 2](./Docker-network2.png)
 
 ### IP-Table
 | Docker / Host | IP-Address | Ports | Description |
