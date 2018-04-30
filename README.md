@@ -43,6 +43,7 @@ Network diagram between NGINX Reverse Proxy and Docker Ports.
 
 ### Reverse proxy
 The reverse proxy wil be configured to redirect all traffic from cloud.nitinankeel.ch to the Owncloud Docker-Container 172.18.0.2 on port 4000.
+<br>
 | From-Address | From-Port | To-Address | To-Port | Description |
 | ------------ | --------- | ---------- | ------- | ----------- |
 | cloud.nitinankeel.ch | 443 | 172.18.0.2 | 4000 | HTTPS to Docker |
