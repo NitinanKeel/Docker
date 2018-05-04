@@ -100,3 +100,112 @@ Now the proxy is just listenning to HTTP.
 To enable HTTPS, [install](https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-16-04) the Certbot Agent.
 
 ### Docker-Compose File
+Create a new folder and a docker-compose.yml file:
+```BASH
+mkdir /docker/owncloud/
+touch /docker/owncloud/docker-compose.yml
+```
+Paste this in your docker-compose.yml file:
+```yaml 
+# Docker-Compose File Version
+version: '2.1'
+
+# Local volumes / Persistent volumes
+volumes:
+  files:
+    driver: local
+  mysql:
+    driver: local
+  backup:
+    driver: local
+  redis:
+    driver: local
+
+# Start defining docker container
+services:
+  # Start defining owncloud docker
+  owncloud:
+    # Owncloud Version = latest and greatest
+    image: owncloud/server:latest
+    # Restart after reboot
+    restart: always
+    # Bind Port 443 to 4000 --> To Docker network NOT physical Network
+    # Bind Port 80 to 8080 --> To Docker network NOT physical Network
+    ports:
+      - 4000:443
+      - 8080:80
+    # Create and start these services too
+    depends_on:
+      - db
+      - redis
+    # Variable to define
+    environment:
+      - OWNCLOUD_DOMAIN=cloud.nitinankeel.ch # Change this to your domain
+      - OWNCLOUD_DB_TYPE=mysql
+      - OWNCLOUD_DB_NAME=owncloud
+      - OWNCLOUD_DB_USERNAME=dbuser # Change the Maria DB username if you want
+      - OWNCLOUD_DB_PASSWORD=******** # Insert your DB user password
+      - OWNCLOUD_DB_HOST=db
+      - OWNCLOUD_ADMIN_USERNAME=adminuser # Change the owncloud admin user
+      - OWNCLOUD_ADMIN_PASSWORD=******* # Insert your admin user password
+      - OWNCLOUD_UTF8MB4_ENABLED=true
+      - OWNCLOUD_REDIS_ENABLED=true
+      - OWNCLOUD_REDIS_HOST=redis
+    # Check if owncloud is up
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/status.php"]
+      # Change interval and timeout if you want
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    # Mount the data folder -- Is persistent
+    volumes:
+      - files:/mnt/data
+
+  # Start defining mariadb docker
+  db:
+    # Version of maria DB is latest and greatest
+    image: webhippie/mariadb:latest
+    # Start docker after server restart
+    restart: always
+    # Variable to define
+    environment:
+      - MARIADB_ROOT_PASSWORD=********* # Insert the DB root password
+      - MARIADB_USERNAME=dbuser # Insert the OWNCLOUD_DB_USERNAME from above
+      - MARIADB_PASSWORD=******** # Insert the OWNCLOUD_DB_PASSWORD from above
+      - MARIADB_DATABASE=owncloud
+      - MARIADB_MAX_ALLOWED_PACKET=128M
+      - MARIADB_INNODB_LOG_FILE_SIZE=64M
+      - MARIADB_INNODB_LARGE_PREFIX=ON
+      - MARIADB_INNODB_FILE_FORMAT=Barracuda
+    # Check if mariadb is up
+    healthcheck:
+      test: ["CMD", "/usr/bin/healthcheck"]
+      # Change interval and timeout if you want
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    # Mount the database and the backup folder -- Is persistent 
+    volumes:
+      - mysql:/var/lib/mysql
+      - backup:/var/lib/backup
+
+  # Start defining redis docker
+  redis:
+    # Version of redis is latest and greatest
+    image: webhippie/redis:latest
+    # Start docker after server restart
+    restart: always
+    # Variable to define
+    environment:
+      - REDIS_DATABASES=1
+    # Check if redis is up
+    healthcheck:
+      test: ["CMD", "/usr/bin/healthcheck"]
+      # Change interval and timeout if you want
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    # Mount the redis folder -- Is persistent
+    volumes:
+      - redis:/var/lib/redis
