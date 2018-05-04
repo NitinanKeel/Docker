@@ -209,3 +209,20 @@ services:
     # Mount the redis folder -- Is persistent
     volumes:
       - redis:/var/lib/redis
+```
+Save and close.
+
+Finally start the containers in the background:
+```BASH
+docker-compose up -d
+```
+## Testing
+| Step | Test Steps | Expected Results | Actual Results | Status |
+| ---- | --------- | ----- | ----------- | - |
+| 1 | Connect to http://cloud.nitinankeel.ch | Redirect to https://cloud.nitinankeel.ch. Owncloud login page will appear. | Redirects to https://cloud.nitinankeel.ch. Owncloud login page appears. | Pass|
+| 2 | Connect to https://cloud.nitinankeel.ch | Owncloud login page will appear. | Owncloud login page appears.| Pass |
+| 3 | Connect to https://cloud.nitinankeel.ch. Login with admin user and the defined password in the .yml-file | Connection established. Logged in as admin in owncloud web. | Connection established. Logged in as admin in owncloud web. | Pass |
+| 4 | Connect local to Docker-Mariadb with a mysql client | Connection established. Login prompt will appear. | The Mariadb login prompt appears. | Pass |
+| 5 | Connect local to Docker-Mariadb with a mysql client. Login with root and the defined root password in the .yml-file | Connection established. Connected with Maria DB as root. | Connection established. Connected with Maria DB as root. | Pass |
+| 6 | Connect local to Docker-Mariadb with a mysql client. Login with owncloud user and the defined password in the .yml-file | Connection established. Connected with Maria DB as owncloud user. | Connection established. Connected with Maria DB as owncloud user. | Pass |
+| 7 | Create a file "test.txt" in owncloud web. Logout and reboot the server. | After the server reboot owncloud should be up and running. The file "test.txt" should exist.  | Owncloud is up and running after the reboot and the file "test.txt" still exists. | Pass |
