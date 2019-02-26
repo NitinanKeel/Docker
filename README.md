@@ -4,7 +4,7 @@ Containerization of application and services
 
 ## Table of contents
 * [Concept](https://github.com/Nitikee/Docker#concept)
-  * [Requierements](https://github.com/Nitikee/Docker#requierements)
+  * [Requirements](https://github.com/Nitikee/Docker#requierements)
   * [Docker Network](https://github.com/Nitikee/Docker#docker-network)
   * [IP-Table](https://github.com/Nitikee/Docker#ip-table)
   * [Reverse proxy](https://github.com/Nitikee/Docker#reverse-proxy)
